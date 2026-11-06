@@ -288,6 +288,12 @@
       footer.site p { margin: 0; font-size: 13.5px; color: var(--ink-3); }
       footer.site .foot-brand { display: flex; align-items: center; gap: 9px; font-family: "Cinzel", serif; color: var(--gold-pale); font-size: 14px; letter-spacing: .05em; }
       footer.site .foot-brand img { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--gold-dim); flex-shrink: 0; object-fit: cover; aspect-ratio: 1; }
+      .visitor-counter { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+      .visitor-counter .vc-label {
+        font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .14em;
+        text-transform: uppercase; color: var(--ink-3);
+      }
+      .visitor-counter img { height: 30px; width: auto; }
 
       /* ---------- lightbox ---------- */
       .lightbox {
@@ -574,6 +580,10 @@
           GOLDEN PIXELS
         </div>
         <p style="word-break:break-all;">© 2026 GoldenPixels · 0.003 ETH each · Seller wallet: <span style="font-family:'IBM Plex Mono',monospace;">0xa3f7c87a727e07a5d9ed4205c0405abbb4200ebb</span></p>
+        <div class="visitor-counter">
+          <span class="vc-label">Website visitors</span>
+          <img src="https://count.getloli.com/@goldenpixels-website?name=goldenpixels-website&theme=original-new&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto" alt="Visitor counter" height="30" loading="lazy" />
+        </div>
       </div>
     </footer>
 
