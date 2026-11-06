@@ -274,6 +274,52 @@
       .copy-feedback { font-size: 13px; color: var(--gold-bright); min-height: 1.4em; display: block; margin-top: 6px; }
       @media (max-width: 520px) { .wallet-row { flex-direction: column; } .wallet-row .copy-btn { width: 100%; } }
 
+      /* ---------- trust strip ---------- */
+      .trust-strip { padding-top: clamp(8px, 2vw, 18px); }
+      .trust-badges {
+        display: flex; flex-wrap: wrap; gap: 12px 26px; justify-content: center; align-items: center;
+        background: var(--panel); border: 1px solid var(--line-soft); border-radius: var(--radius);
+        padding: 16px 22px;
+      }
+      .trust-badges span {
+        display: inline-flex; align-items: center; gap: 9px;
+        font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--gold-pale); white-space: nowrap;
+      }
+      .trust-badges span i { width: 6px; height: 6px; background: var(--gold); display: block; flex-shrink: 0; }
+
+      /* ---------- why collect ---------- */
+      .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+      .why-point { background: var(--panel); border: 1px solid var(--line-soft); border-radius: var(--radius); padding: 24px 24px 22px; }
+      .why-point .num {
+        font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: .1em; color: #171100;
+        background: var(--gold); display: inline-block; padding: 3px 9px; border-radius: 4px; margin-bottom: 14px; font-weight: 500;
+      }
+      .why-point h3 { margin: 0 0 8px; font-size: 18.5px; font-weight: 500; font-family: "Cinzel", serif; letter-spacing: .01em; }
+      .why-point p { margin: 0; font-size: 15px; color: var(--ink-2); }
+      .why-point p b { color: var(--gold-pale); font-weight: 500; }
+
+      /* ---------- faq ---------- */
+      .faq-list { max-width: 760px; }
+      .faq-item { padding: 20px 0; border-top: 1px solid var(--line-soft); }
+      .faq-item:first-child { border-top: none; padding-top: 0; }
+      .faq-item h3 { margin: 0 0 7px; font-size: 17.5px; font-weight: 600; color: var(--ink); }
+      .faq-item p { margin: 0; font-size: 15.5px; color: var(--ink-2); }
+      .faq-item p b { color: var(--gold-pale); font-weight: 500; }
+
+      /* ---------- closing cta band ---------- */
+      .cta-band { padding: clamp(52px, 8vw, 80px) 0; border-top: 1px solid var(--line-soft); text-align: center; }
+      .cta-band .cta-inner {
+        background: linear-gradient(180deg, var(--panel-2), var(--panel));
+        border: 1px solid var(--line); border-radius: var(--radius);
+        padding: clamp(30px, 5vw, 48px) clamp(20px, 5vw, 48px);
+      }
+      .cta-band p {
+        font-family: "Cinzel", serif; font-weight: 600;
+        font-size: clamp(24px, 4.4vw, 36px); line-height: 1.25; margin: 0 0 24px; color: var(--ink);
+      }
+      .cta-band p .gold { color: var(--gold-bright); }
+
       /* ---------- creator ---------- */
       .creator {
         display: flex; gap: clamp(20px, 4vw, 36px); align-items: center;
@@ -333,7 +379,7 @@
       @media (max-width: 860px) {
         .featured, .about-grid { grid-template-columns: 1fr; }
         .gallery { grid-template-columns: 1fr 1fr; }
-        .steps { grid-template-columns: 1fr; }
+        .steps, .why-grid { grid-template-columns: 1fr; }
         .creator { flex-direction: column; text-align: center; }
         .creator .links { justify-content: center; }
         .creator p { margin-inline: auto; }
@@ -364,8 +410,10 @@
         <div class="links">
           <a href="#featured">Featured</a>
           <a href="#gallery">Gallery</a>
+          <a href="#why">Why Collect</a>
           <a href="#about">About</a>
           <a href="#buy">How to Buy</a>
+          <a href="#faq">FAQ</a>
           <a href="#creator">Creator</a>
         </div>
       </div>
@@ -389,6 +437,18 @@
           </div>
         </div>
       </header>
+
+      <!-- TRUST STRIP -->
+      <div class="trust-strip">
+        <div class="wrap">
+          <div class="trust-badges">
+            <span><i aria-hidden="true"></i>1 of 1 Editions</span>
+            <span><i aria-hidden="true"></i>No Copies, No Re-mints</span>
+            <span><i aria-hidden="true"></i>Ownership on Ethereum</span>
+            <span><i aria-hidden="true"></i>Official Seller Wallet Published</span>
+          </div>
+        </div>
+      </div>
 
       <!-- FEATURED -->
       <section id="featured">
@@ -482,6 +542,39 @@
         </div>
       </section>
 
+      <!-- WHY COLLECT -->
+      <section id="why">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <div class="pix-rule" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <h2>Why Collect Golden Pixels</h2>
+            <p>Four honest reasons this collection is built to be worth owning.</p>
+          </div>
+          <div class="why-grid reveal">
+            <div class="why-point">
+              <span class="num">01</span>
+              <h3>Truly One of One</h3>
+              <p>Every artwork is a single edition. It will never be copied, re-minted, or reissued — when it is gone, it is gone.</p>
+            </div>
+            <div class="why-point">
+              <span class="num">02</span>
+              <h3>A Limited Debut Series</h3>
+              <p>Series 1 is limited to 20 artworks in total. Five are already released; the series closes at twenty, forever.</p>
+            </div>
+            <div class="why-point">
+              <span class="num">03</span>
+              <h3>Ownership You Can Verify</h3>
+              <p>Each piece is an NFT on Ethereum sold through Rarible. The official seller wallet is published on this page — always check the <b>0xa3f7</b> prefix and <b>0ebb</b> suffix before you pay.</p>
+            </div>
+            <div class="why-point">
+              <span class="num">04</span>
+              <h3>The Full-Resolution Master</h3>
+              <p>Website previews are small and watermarked for protection. The buyer receives the original full-resolution 1600 × 1600 artwork file after purchase.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- ABOUT -->
       <section id="about">
         <div class="wrap">
@@ -503,9 +596,13 @@
                 <li><span>Palette</span><b>Gold &amp; White on Black</b></li>
                 <li><span>Style</span><b>Generative Pixel Art</b></li>
                 <li><span>Edition</span><b>1 of 1 per piece</b></li>
-                <li><span>Artworks released</span><b>2 artworks</b></li>
+                <li><span>Artworks released</span><b>5 artworks</b></li>
+                <li><span>Series limit</span><b>20 artworks (Series 1)</b></li>
                 <li><span>First artwork</span><b>#001 — First Light</b></li>
                 <li><span>Second artwork</span><b>#002 — Golden Spiral</b></li>
+                <li><span>Third artwork</span><b>#003 — Golden Rain</b></li>
+                <li><span>Fourth artwork</span><b>#004 — Golden Crown</b></li>
+                <li><span>Fifth artwork</span><b>#005 — Golden Wave</b></li>
                 <li><span>Price</span><b>0.003 ETH each</b></li>
                 <li><span>Seller wallet</span><b style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;word-break:break-all;">0xa3f7…0ebb</b></li>
                 <li><span>Marketplaces</span><b>OpenSea &amp; Rarible</b></li>
@@ -560,6 +657,39 @@
         </div>
       </section>
 
+      <!-- FAQ -->
+      <section id="faq">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <div class="pix-rule" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <h2>FAQ</h2>
+            <p>Straight answers before you buy.</p>
+          </div>
+          <div class="faq-list reveal">
+            <div class="faq-item">
+              <h3>What exactly do I buy?</h3>
+              <p>Ownership of the unique NFT on Ethereum, recorded in your wallet, plus the full-resolution master file of the artwork delivered to you after purchase.</p>
+            </div>
+            <div class="faq-item">
+              <h3>How do I buy a piece?</h3>
+              <p>Click &ldquo;Buy on Rarible&rdquo; on the artwork, connect your wallet on Rarible, and complete the purchase there. This website never takes payments directly.</p>
+            </div>
+            <div class="faq-item">
+              <h3>Who pays the minting gas?</h3>
+              <p>These pieces use free (lazy) minting: the artwork is minted to your wallet at the moment of purchase, and the buyer covers the mint gas shown on Rarible at checkout.</p>
+            </div>
+            <div class="faq-item">
+              <h3>How do I know a listing is genuine?</h3>
+              <p>Only buy through the buttons on this official website, and check that the seller wallet is <b style="font-family:'IBM Plex Mono',monospace;font-size:14px;word-break:break-all;">0xa3f7c87a727e07a5d9ed4205c0405abbb4200ebb</b>. Copies or screenshots of the image are not the NFT.</p>
+            </div>
+            <div class="faq-item">
+              <h3>Will there be more copies later?</h3>
+              <p>No. Every Golden Pixels artwork is 1 of 1 — no copies, no re-mints, no second editions.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- CREATOR -->
       <section id="creator">
         <div class="wrap">
@@ -587,6 +717,16 @@
           </div>
         </div>
       </section>
+
+      <!-- CLOSING CTA -->
+      <div class="cta-band">
+        <div class="wrap">
+          <div class="cta-inner">
+            <p>Own the <span class="gold">light</span> before someone else does.</p>
+            <a class="btn btn-gold" href="#gallery">View the Collection</a>
+          </div>
+        </div>
+      </div>
     </main>
 
     <footer class="site">
