@@ -373,6 +373,63 @@
       }
       .lightbox .close:hover { border-color: var(--gold-dim); }
 
+      /* ---------- sparkle overlay (decorative layer above artwork images; images themselves untouched) ---------- */
+      .card .thumb { position: relative; }
+      .lightbox figure { position: relative; }
+      .art-frame .zoom-hint { z-index: 3; }
+      .sparkle-layer {
+        position: absolute; inset: 0; display: block; overflow: hidden;
+        pointer-events: none; z-index: 2; border-radius: inherit;
+      }
+      .lightbox .sparkle-layer { bottom: auto; aspect-ratio: 1 / 1; border-radius: 10px; }
+      .sparkle-layer .shimmer {
+        position: absolute; top: -12%; bottom: -12%; left: 0; width: 55%; display: block;
+        background: linear-gradient(100deg, transparent 0%, rgba(245,201,76,.05) 30%, rgba(255,233,168,.15) 50%, rgba(245,201,76,.05) 70%, transparent 100%);
+        transform: translateX(-190%) skewX(-16deg);
+        animation: gp-shimmer 7.5s ease-in-out infinite;
+      }
+      @keyframes gp-shimmer {
+        0% { transform: translateX(-190%) skewX(-16deg); }
+        32% { transform: translateX(330%) skewX(-16deg); }
+        100% { transform: translateX(330%) skewX(-16deg); }
+      }
+      .sparkle-layer .star {
+        position: absolute; display: block; opacity: 0;
+        background: var(--gold-bright);
+        clip-path: polygon(50% 0%, 63% 37%, 100% 50%, 63% 63%, 50% 100%, 37% 63%, 0% 50%, 37% 37%);
+        filter: drop-shadow(0 0 3px rgba(245,201,76,.85));
+        animation: gp-twinkle 3.4s ease-in-out infinite;
+      }
+      .sparkle-layer .star.white { background: #fff7e0; filter: drop-shadow(0 0 3px rgba(255,247,224,.9)); }
+      @keyframes gp-twinkle {
+        0%, 100% { opacity: 0; transform: scale(.35) rotate(0deg); }
+        50% { opacity: .95; transform: scale(1) rotate(40deg); }
+      }
+
+      /* ---------- hero gold dust ---------- */
+      header.hero { position: relative; }
+      header.hero .wrap { position: relative; z-index: 1; }
+      .dust-layer {
+        position: absolute; inset: 0; display: block; overflow: hidden;
+        pointer-events: none; z-index: 0;
+      }
+      .dust-layer .mote {
+        position: absolute; bottom: -8px; display: block; border-radius: 50%; opacity: 0;
+        background: radial-gradient(circle, rgba(255,233,168,.85) 0%, rgba(245,201,76,.35) 55%, transparent 75%);
+        animation: gp-drift 14s linear infinite;
+      }
+      @keyframes gp-drift {
+        0% { transform: translate3d(0, 0, 0); opacity: 0; }
+        12% { opacity: .5; }
+        50% { transform: translate3d(14px, -46vh, 0); }
+        88% { opacity: .4; }
+        100% { transform: translate3d(-10px, -94vh, 0); opacity: 0; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .sparkle-layer, .dust-layer { display: none !important; }
+        .sparkle-layer .star, .sparkle-layer .shimmer, .dust-layer .mote { animation: none !important; }
+      }
+
       /* Sections render fully visible — no scroll-gated reveal, so the
          whole page is readable in any capture or client. */
 
@@ -878,6 +935,69 @@
           copyBtns[c].addEventListener('click', (function (b) { return function () { copyWallet(b); }; })(copyBtns[c]));
         }
 
+      })();
+    </script>
+    <script>
+      (function () {
+        // Sparkle overlay — decorative layer injected above the artwork
+        // images (the image files themselves are never modified).
+        // Skipped entirely for visitors who prefer reduced motion.
+        var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduceMotion) return;
+        function rand(min, max) { return min + Math.random() * (max - min); }
+
+        function addSparkles(container, starCount) {
+          if (!container || container.querySelector('.sparkle-layer')) return;
+          var layer = document.createElement('span');
+          layer.className = 'sparkle-layer';
+          layer.setAttribute('aria-hidden', 'true');
+          var shimmer = document.createElement('span');
+          shimmer.className = 'shimmer';
+          shimmer.style.animationDuration = rand(6.5, 9.5).toFixed(2) + 's';
+          shimmer.style.animationDelay = rand(0, 3.5).toFixed(2) + 's';
+          layer.appendChild(shimmer);
+          for (var i = 0; i < starCount; i++) {
+            var star = document.createElement('span');
+            star.className = 'star' + (Math.random() < 0.35 ? ' white' : '');
+            var size = rand(4, 10);
+            star.style.width = size.toFixed(1) + 'px';
+            star.style.height = size.toFixed(1) + 'px';
+            star.style.left = rand(3, 93).toFixed(1) + '%';
+            star.style.top = rand(3, 91).toFixed(1) + '%';
+            star.style.animationDuration = rand(2.2, 4.8).toFixed(2) + 's';
+            star.style.animationDelay = (-rand(0, 5)).toFixed(2) + 's';
+            layer.appendChild(star);
+          }
+          container.appendChild(layer);
+        }
+
+        // Featured artwork (#001) and the five gallery cards (#001–#005)
+        var frames = document.querySelectorAll('.art-frame, .card .thumb');
+        for (var f = 0; f < frames.length; f++) {
+          addSparkles(frames[f], frames[f].classList.contains('art-frame') ? 22 : 14);
+        }
+        // Lightbox enlarged view — same pattern over the image area
+        addSparkles(document.querySelector('.lightbox figure'), 22);
+
+        // Hero — faint gold dust motes drifting upward behind the text
+        var hero = document.querySelector('header.hero');
+        if (hero) {
+          var dust = document.createElement('span');
+          dust.className = 'dust-layer';
+          dust.setAttribute('aria-hidden', 'true');
+          for (var d = 0; d < 22; d++) {
+            var mote = document.createElement('span');
+            mote.className = 'mote';
+            var mSize = rand(2, 4.5);
+            mote.style.width = mSize.toFixed(1) + 'px';
+            mote.style.height = mSize.toFixed(1) + 'px';
+            mote.style.left = rand(1, 98).toFixed(1) + '%';
+            mote.style.animationDuration = rand(9, 18).toFixed(1) + 's';
+            mote.style.animationDelay = (-rand(0, 18)).toFixed(1) + 's';
+            dust.appendChild(mote);
+          }
+          hero.insertBefore(dust, hero.firstChild);
+        }
       })();
     </script>
   </body>
