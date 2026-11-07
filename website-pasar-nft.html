@@ -452,6 +452,21 @@
         .status-chip .dot { animation: none; }
         .art-frame img, .card .thumb img { transition: none; }
       }
+    
+      /* ---------- roadmap ---------- */
+      .rm-list { max-width: 820px; }
+      .rm-item { padding: 22px 0; border-top: 1px solid var(--line-soft); }
+      .rm-item:first-child { border-top: none; padding-top: 0; }
+      .rm-tag { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+      .rm-phase { font-size: 12px; letter-spacing: .18em; color: var(--gold); font-weight: 700; }
+      .rm-badge { font-size: 10.5px; letter-spacing: .12em; font-weight: 700; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--gold-dim); color: var(--gold-pale); white-space: nowrap; }
+      .rm-badge.done { background: var(--gold); color: #171204; border-color: var(--gold); }
+      .rm-badge.prog { color: var(--gold-bright); border-color: var(--gold); }
+      .rm-badge.soon { color: var(--ink-2); border-color: var(--line); }
+      .rm-item h3 { margin: 0 0 7px; font-size: 19px; font-weight: 600; color: var(--ink); }
+      .rm-item p { margin: 0; color: var(--ink-2); line-height: 1.65; }
+      .rm-rule { margin-top: 26px; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--ink-2); line-height: 1.65; }
+      .rm-rule strong { color: var(--gold-bright); }
     </style>
   <script type="application/ld+json">
 {
@@ -738,6 +753,7 @@
           <a href="#featured">Featured</a>
           <a href="#gallery">Gallery</a>
           <a href="#why">Why Collect</a>
+          <a href="#roadmap">Roadmap</a>
           <a href="#about">About</a>
           <a href="#buy">How to Buy</a>
           <a href="#faq">FAQ</a>
@@ -1316,6 +1332,70 @@
       </section>
 
       <!-- FAQ -->
+      <!-- ROADMAP -->
+      <section id="roadmap">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <div class="pix-rule" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <h2>The Roadmap</h2>
+            <p>Where Golden Pixels has been — and exactly where it is going. Every phase below is public and checkable.</p>
+          </div>
+          <div class="rm-list reveal">
+            <div class="rm-item">
+              <div class="rm-tag"><span class="rm-phase">PHASE 1</span><span class="rm-badge done">COMPLETED</span></div>
+              <h3>The First Light — Series 1 Created</h3>
+              <p>All 20 Series 1 artworks are created: abstract gold pixel art on pure black, each strictly one-of-one. That number is final — no copies, no re-mints, and Series 1 will never grow beyond 20 pieces.</p>
+            </div>
+            <div class="rm-item">
+              <div class="rm-tag"><span class="rm-phase">PHASE 2</span><span class="rm-badge done">COMPLETED</span></div>
+              <h3>The Official Storefront</h3>
+              <p>This website is live with the complete gallery, the official seller wallet published for buyer safety, a full collector FAQ, and a step-by-step buying guide.</p>
+            </div>
+            <div class="rm-item">
+              <div class="rm-tag"><span class="rm-phase">PHASE 3</span><span class="rm-badge done">COMPLETED</span></div>
+              <h3>The First Listings on Rarible</h3>
+              <p>#001 First Light, #002 Golden Spiral and #011 Golden Phoenix are on sale at 0.003 ETH each, with 10% royalties and free lazy minting — each piece is minted to the buyer's wallet at the moment of purchase.</p>
+            </div>
+            <div class="rm-item">
+              <div class="rm-tag"><span class="rm-phase">PHASE 4</span><span class="rm-badge done">COMPLETED</span></div>
+              <h3>The Film &amp; The Voice</h3>
+              <p>The Golden Pixels YouTube channel is live with the Series 1 film and our Vision &amp; Mission, and @GoldenPixelss on X carries every announcement first.</p>
+            </div>
+            <div class="rm-item">
+              <div class="rm-tag"><span class="rm-phase">PHASE 5</span><span class="rm-badge prog">IN PROGRESS</span></div>
+              <h3>Complete the Rollout</h3>
+              <p>The remaining 17 artworks are being listed one by one on Rarible. Every new listing is announced on X the moment it goes live — follow along and collect the pieces you want before someone else does.</p>
+            </div>
+            <div class="rm-item">
+              <div class="rm-tag"><span class="rm-phase">PHASE 6</span><span class="rm-badge prog">IN PROGRESS</span></div>
+              <h3>One Film per Artwork</h3>
+              <p>Every artwork gets its own Short on YouTube — #001 through #020 — so collectors can watch each piece in motion before they buy.</p>
+            </div>
+            <div class="rm-item">
+              <div class="rm-tag"><span class="rm-phase">PHASE 7</span><span class="rm-badge soon">COMING SOON</span></div>
+              <h3>The Collector Airdrop</h3>
+              <p>As announced at the end of our Vision &amp; Mission film: an airdrop is coming to the Golden Pixels community. We do not whisper dates — the details will be announced openly, first on X and YouTube.</p>
+            </div>
+            <div class="rm-item">
+              <div class="rm-tag"><span class="rm-phase">PHASE 8</span><span class="rm-badge soon">NEXT</span></div>
+              <h3>Marketplace Expansion</h3>
+              <p>Once the Rarible rollout is complete, we evaluate a second marketplace so collectors can buy where they prefer. Nothing is announced until it is confirmed.</p>
+            </div>
+            <div class="rm-item">
+              <div class="rm-tag"><span class="rm-phase">PHASE 9</span><span class="rm-badge soon">NEXT</span></div>
+              <h3>Collector Rewards &amp; Community</h3>
+              <p>Holder spotlights, early previews of new work, and a real voice for collectors in what Golden Pixels creates next.</p>
+            </div>
+            <div class="rm-item">
+              <div class="rm-tag"><span class="rm-phase">PHASE 10</span><span class="rm-badge soon">THE VISION</span></div>
+              <h3>A Multi-Series Gold Pixel Art House</h3>
+              <p>Golden Pixels grows series by series — every future series strictly limited and announced in advance. Series 1 remains the sealed foundation of it all: 20 pieces, forever.</p>
+            </div>
+          </div>
+          <div class="rm-rule reveal"><strong>Our roadmap rule:</strong> we announce only what is real. <strong>Completed</strong> means you can verify it today. <strong>In progress</strong> means we are working on it now. <strong>Coming soon</strong> means it is planned and will be announced openly — never hyped in whispers.</div>
+        </div>
+      </section>
+
       <section id="faq">
         <div class="wrap">
           <div class="sec-head reveal">
