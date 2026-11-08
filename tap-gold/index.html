@@ -131,7 +131,7 @@
       <div class="game-brand">GOLDEN PIXELS</div>
       <div class="game-token">Token: Golden Pixels $GPXL</div>
       <div class="rules">
-        Tap the gold pixels before they fall! 30 seconds.<br>
+        Tap the gold pixels before they fall! 60 seconds.<br>
         Gold <b>+10</b> &nbsp;•&nbsp; Orange <b>+25</b> &nbsp;•&nbsp; Bright <b>+50</b><br>
         Avoid the BOMB: <b>-15</b> &amp; your combo breaks!<br>
         Combo 5x = <b>x2</b>,&nbsp; 10x = <b>x3</b> points
@@ -198,7 +198,7 @@
   <section class="info">
     <h2>🎮 How to Play</h2>
     <ul>
-      <li>You have <b>30 seconds</b>.</li>
+      <li>You have <b>60 seconds</b>.</li>
       <li>Gold pixels (+10), orange (+25), and rare bright gold (+50) fall from the top — tap them before they land!</li>
       <li>Combo streaks: 5 taps = <b>x2</b> points, 10 taps = <b>x3</b>.</li>
       <li>Avoid the dark BOMB pixels: <b>-15 points</b>, your combo breaks, and the screen shakes.</li>
@@ -237,7 +237,7 @@
 const LB_CONFIG = { url: "https://kmkabjvhqtsaskhekecs.supabase.co", anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtta2FianZocXRzYXNraGVrZWNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQwOTY1NDQsImV4cCI6MjEwOTY3MjU0NH0.G1HbMk-BmORhBH0aNzP9x85lVM2BZ2FVr9SlklspTz0" };
 
 /* ================= constants (mirrored from the native Android game) ================= */
-const ROUND_MS = 30000;
+const ROUND_MS = 60000;
 const LS_HIGH = "tg_highscore";
 const LS_GPXL = "tg_gpxl_balance";
 const LS_NAME = "tg_name";
@@ -452,7 +452,13 @@ function spawnPixel(now) {
   const margin = size;
   const x = margin + Math.random() * Math.max(10, W - margin * 2);
   const elapsed = now - startStamp;
-  const speedBase = dp(130) + (elapsed / 1000) * dp(7);      // falls faster as the round goes on
+  const elapsedSec = elapsed / 1000;
+  // Fall speed ramps across the whole 60 s round: the first 30 s reuse the
+  // original slope (base 130 -> 340 dp/s), then it steepens so the base
+  // reaches 680 dp/s at t=60 s (2x the old game's end speed), capped there.
+  const ramp = elapsedSec <= 30 ? elapsedSec * 7
+                                : 210 + (elapsedSec - 30) * (340 / 30);
+  const speedBase = dp(130) + dp(Math.min(550, ramp));
   const speed = speedBase + Math.random() * dp(90);
   pixels.push({ x: x, y: -size, size: size, speed: speed, type: type, points: points,
                 wobblePhase: Math.random() * 6.28 });
@@ -584,8 +590,8 @@ function frame(now) {
 
   if (remainingMs(now) <= 0) { endGame(); return; }
 
-  const elapsed = now - startStamp;                        // spawn interval shrinks 650ms -> 340ms
-  const interval = Math.max(340, 650 - elapsed / 100);
+  const elapsed = now - startStamp;                        // spawn interval shrinks 650ms -> 290ms across the 60 s round
+  const interval = Math.max(290, 650 - (elapsed / 1000) * 6);
   if (lastSpawnStamp === 0 || now - lastSpawnStamp >= interval) { spawnPixel(now); lastSpawnStamp = now; }
 
   pixels = pixels.filter(function (p) {
