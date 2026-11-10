@@ -88,6 +88,12 @@
   .lb-row button:disabled{opacity:.55;cursor:default;}
   .lb-note{margin-top:7px;font-size:12.5px;color:var(--gold-pale);font-family:Arial,Helvetica,sans-serif;min-height:15px;}
 
+  .task-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid rgba(255,197,0,.15);}
+  .task-label{flex:1;text-align:left;font-size:13px;color:#ffe9a8;font-family:Arial,Helvetica,sans-serif;}
+  .task-reward{font-size:12px;color:var(--gold);font-weight:700;white-space:nowrap;}
+  .task-btn{background:var(--gold);color:#111;border:none;border-radius:8px;padding:6px 10px;font-weight:800;font-size:12px;cursor:pointer;font-family:Arial,Helvetica,sans-serif;}
+  .task-btn:disabled{background:#3a3a3a;color:#9a9a9a;cursor:default;}
+
   /* ---------- promo footer (start & game-over screens only) ---------- */
   .promo{margin-top:auto;padding-top:14px;width:100%;}
   .promo .promo-label{color:#8c835f;font-size:10.5px;letter-spacing:2px;text-transform:uppercase;
@@ -155,6 +161,12 @@
         <div id="lbList"><span class="lb-off">Leaderboard unavailable offline</span></div>
       </div>
 
+
+      <div class="lb" id="taskPanel">
+        <h3>📋 Tugas — Dapat Koin Gratis</h3>
+        <div class="lb-note" style="margin-bottom:6px;">Follow &amp; subscribe sosmed Golden Pixels — tiap tugas <b>+25 🪙 $GPXL</b>. Tap "Kerjakan", follow/subscribe di sana, balik ke sini, lalu tap "Klaim".</div>
+        <div id="taskList"></div>
+      </div>
       <div class="promo">
         <div class="promo-label">Golden Pixels Projects</div>
         <nav>
@@ -388,6 +400,52 @@ function refreshStartStats() {
   if (highScore > 0) { startHighEl.style.display = ""; startHighEl.textContent = "High Score: " + highScore; }
   else startHighEl.style.display = "none";
 }
+
+
+/* ================= social tasks (follow & subscribe, +25 each) ================= */
+const TASKS = [
+  {id:"x",    icon:"𝕏", label:"Follow X @GoldenPixelss",         url:"https://x.com/GoldenPixelss"},
+  {id:"ytgp", icon:"▶️", label:"Subscribe YouTube Golden Pixels", url:"https://www.youtube.com/@GoldenPixelsNFT"},
+  {id:"dc",   icon:"💬", label:"Join Discord Golden Pixels",      url:"https://discord.gg/JfakthmYQ2"},
+  {id:"tt",   icon:"🎵", label:"Follow TikTok @tiktok_bebass0",   url:"https://www.tiktok.com/@tiktok_bebass0"},
+  {id:"ytk",  icon:"🧒", label:"Subscribe YouTube Dongeng Kiko",  url:"https://www.youtube.com/channel/UCK2R63Ntjbqz6jUYBGMK1aA"}
+];
+const TASK_REWARD = 25, LS_TASKS = "tasks_v1";
+let taskState = {};
+try { taskState = JSON.parse(localStorage.getItem(LS_TASKS) || "{}") || {}; } catch (e) { taskState = {}; }
+function saveTasks() { try { localStorage.setItem(LS_TASKS, JSON.stringify(taskState)); } catch (e) {} }
+function renderTasks() {
+  const box = document.getElementById("taskList");
+  if (!box) return;
+  box.innerHTML = "";
+  TASKS.forEach(function (t) {
+    const st = taskState[t.id] || "";
+    const row = document.createElement("div"); row.className = "task-row";
+    const left = document.createElement("div"); left.className = "task-label";
+    left.textContent = t.icon + " " + t.label;
+    const rw = document.createElement("div"); rw.className = "task-reward";
+    rw.textContent = "+" + TASK_REWARD + " 🪙";
+    const btn = document.createElement("button"); btn.type = "button"; btn.className = "task-btn";
+    if (st === "done") { btn.textContent = "✅ Selesai"; btn.disabled = true; }
+    else if (st === "opened") { btn.textContent = "Klaim"; btn.addEventListener("click", function () { claimTask(t.id); }); }
+    else { btn.textContent = "Kerjakan"; btn.addEventListener("click", function () { openTask(t); }); }
+    row.appendChild(left); row.appendChild(rw); row.appendChild(btn);
+    box.appendChild(row);
+  });
+}
+function openTask(t) {
+  taskState[t.id] = "opened"; saveTasks(); renderTasks();
+  if (window.Telegram && Telegram.WebApp && Telegram.WebApp.openLink) Telegram.WebApp.openLink(t.url);
+  else window.open(t.url, "_blank", "noopener");
+}
+function claimTask(id) {
+  if (taskState[id] !== "opened") return;
+  taskState[id] = "done"; saveTasks();
+  gpxlBalance += TASK_REWARD;
+  try { localStorage.setItem(LS_GPXL, String(gpxlBalance)); } catch (e) {}
+  refreshStartStats(); renderTasks();
+}
+renderTasks();
 
 /* ================= sound effects (Web Audio API, all synthesized) =================
    The AudioContext is created lazily inside sfx.unlock(), which is only
