@@ -104,6 +104,16 @@
   .promo a:hover{color:var(--gold-light);border-color:var(--gold);}
   .brand-foot{margin-top:9px;color:#8c835f;font-size:12px;}
 
+  .ad-card{margin-top:16px;width:100%;max-width:380px;border:1px solid var(--gold);text-align:left;cursor:pointer;
+    background:linear-gradient(180deg,rgba(60,44,0,.92),rgba(20,16,0,.94));padding:10px 12px 11px;
+    box-shadow:0 0 18px rgba(212,175,55,.18);}
+  .ad-card:active{transform:translateY(1px);}
+  .ad-tag{display:inline-block;background:var(--gold);color:#111;font-size:10px;font-weight:800;letter-spacing:2px;
+    padding:2px 6px;font-family:Arial,Helvetica,sans-serif;}
+  .ad-title{margin-top:7px;color:var(--gold-light);font-size:17px;font-weight:bold;line-height:1.25;}
+  .ad-text{margin-top:3px;color:#e8e4d8;font-size:12.5px;line-height:1.45;font-family:Arial,Helvetica,sans-serif;}
+  .ad-cta{margin-top:7px;color:var(--gold-pale);font-size:12px;font-weight:700;font-family:Arial,Helvetica,sans-serif;}
+
   /* ---------- text sections under the game ---------- */
   section.info{margin-top:22px;border-top:1px solid #2c2408;padding-top:14px;
     font-family:Arial,Helvetica,sans-serif;font-size:14.5px;line-height:1.65;color:#d8d4c8;}
@@ -119,6 +129,7 @@
 </style>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <style>html,body{overscroll-behavior:none;}</style>
 </head>
 <body>
@@ -167,6 +178,12 @@
         <div class="lb-note" style="margin-bottom:6px;">Follow &amp; subscribe sosmed Golden Pixels — tiap tugas <b>+25 🪙 $GPXL</b>. Tap "Kerjakan", follow/subscribe di sana, balik ke sini, lalu tap "Klaim".</div>
         <div id="taskList"></div>
       </div>
+      <div class="ad-card house-ad" role="button" tabindex="0" aria-label="Advertisement">
+        <span class="ad-tag">IKLAN</span>
+        <div class="ad-title"></div>
+        <div class="ad-text"></div>
+        <div class="ad-cta"></div>
+      </div>
       <div class="promo">
         <div class="promo-label">Golden Pixels Projects</div>
         <nav>
@@ -199,9 +216,17 @@
       </div>
 
       <button class="btn" id="againBtn" type="button">PLAY AGAIN</button>
+      <button class="task-btn" id="adRewardBtn" type="button" style="display:none;margin-top:12px;">📺 Tonton Iklan — Bonus +25 🪙</button>
+      <div class="lb-note" id="adNote"></div>
       <div class="honest">Honest note: these are $GPXL <b>game points</b> — they can be claimed after the
         $GPXL token is LIVE on Solana. Official CA: DTTsj6jUBCcwCFAZqFwrL9e192WYjgbJyRQ3ynq5pump — the claim process will be announced on our official channels.</div>
 
+      <div class="ad-card house-ad" role="button" tabindex="0" aria-label="Advertisement">
+        <span class="ad-tag">IKLAN</span>
+        <div class="ad-title"></div>
+        <div class="ad-text"></div>
+        <div class="ad-cta"></div>
+      </div>
       <div class="promo">
         <div class="promo-label">Golden Pixels Projects</div>
         <nav>
@@ -447,6 +472,95 @@ function claimTask(id) {
 }
 renderTasks();
 
+/* ================= ads (house promos now, AdsGram paid ads when blockId is set) =================
+   IKLAN BERBAYAR: daftar di partner.adsgram.ai -> Create platform (Telegram Mini-app)
+   -> + Block (type: Reward) -> salin BlockID -> tempel ke ADSGRAM_BLOCK_ID di bawah.
+   Selama kosong, yang tampil hanya iklan promosi sendiri (house ads) di bawah. */
+const ADSGRAM_BLOCK_ID = "";
+const AD_REWARD = 25;
+const HOUSE_ADS = [
+  {title:"Golden Pixels NFT — 20 Gold Pixel Art 1/1",
+   text:"Koleksi seni pixel emas di atas hitam. Series 1 disegel selamanya — lihat karya yang masih dijual.",
+   cta:"Lihat koleksi →", url:"https://goldenpixels.github.io/"},
+  {title:"$GPXL Airdrop — Kumpulkan Poin & Daftar",
+   text:"Main Tap Gold, kumpulkan poin $GPXL, lalu daftarkan wallet kamu untuk catatan airdrop.",
+   cta:"Daftar airdrop →", url:"https://goldenpixels.github.io/goldenpixels-airdrop/"},
+  {title:"Trade $GPXL di pump.fun",
+   text:"Token resmi Golden Pixels di Solana. CA: DTTsj6jUBCcwCFAZqFwrL9e192WYjgbJyRQ3ynq5pump",
+   cta:"Buka pump.fun →", url:"https://pump.fun/coin/DTTsj6jUBCcwCFAZqFwrL9e192WYjgbJyRQ3ynq5pump"},
+  {title:"Dongeng Kiko — Cerita Anak Sebelum Tidur",
+   text:"Channel dongeng anak berbahasa Indonesia. Tonton cerita Kiko bareng keluarga.",
+   cta:"Tonton di YouTube →", url:"https://www.youtube.com/channel/UCK2R63Ntjbqz6jUYBGMK1aA"}
+];
+let houseAdIdx = 0, adsgramController = null, adBusy = false;
+function openAdUrl(url) {
+  if (window.Telegram && Telegram.WebApp && Telegram.WebApp.openLink) Telegram.WebApp.openLink(url);
+  else window.open(url, "_blank", "noopener");
+}
+function renderHouseAds() {
+  const ad = HOUSE_ADS[houseAdIdx % HOUSE_ADS.length];
+  document.querySelectorAll(".house-ad").forEach(function (card) {
+    card.querySelector(".ad-title").textContent = ad.title;
+    card.querySelector(".ad-text").textContent = ad.text;
+    card.querySelector(".ad-cta").textContent = ad.cta;
+    card.onclick = function () { openAdUrl(ad.url); };
+    card.onkeydown = function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openAdUrl(ad.url); } };
+  });
+}
+renderHouseAds();
+setInterval(function () { houseAdIdx++; renderHouseAds(); }, 5000);
+function adsgramReady() { return !!(ADSGRAM_BLOCK_ID && window.Adsgram); }
+function getAdsgram() {
+  if (!adsgramReady()) return null;
+  if (!adsgramController) {
+    try { adsgramController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID }); }
+    catch (e) { adsgramController = null; }
+  }
+  return adsgramController;
+}
+function onGameOverAds() {
+  const btn = document.getElementById("adRewardBtn");
+  const note = document.getElementById("adNote");
+  if (!btn) return;
+  if (adsgramReady()) {
+    btn.style.display = "";
+    btn.disabled = false;
+    btn.textContent = "📺 Tonton Iklan — Bonus +" + AD_REWARD + " 🪙";
+    if (note) note.textContent = "";
+  } else {
+    btn.style.display = "none";
+    if (note) note.textContent = "";
+  }
+}
+function watchRewardAd() {
+  const btn = document.getElementById("adRewardBtn");
+  const note = document.getElementById("adNote");
+  const ctl = getAdsgram();
+  if (!ctl || adBusy) return;
+  adBusy = true;
+  if (btn) { btn.disabled = true; btn.textContent = "Memuat iklan…"; }
+  ctl.show().then(function (result) {
+    if (result && result.done) {
+      gpxlBalance += AD_REWARD;
+      try { localStorage.setItem(LS_GPXL, String(gpxlBalance)); } catch (e) {}
+      overBalEl.textContent = gpxlBalance;
+      refreshStartStats();
+      if (note) note.textContent = "✅ Iklan selesai — bonus +" + AD_REWARD + " 🪙 masuk.";
+      if (btn) btn.textContent = "✅ Bonus Diterima";
+    } else {
+      if (note) note.textContent = "Iklan ditutup sebelum selesai — bonus belum masuk.";
+      if (btn) { btn.disabled = false; btn.textContent = "📺 Tonton Iklan — Bonus +" + AD_REWARD + " 🪙"; }
+    }
+  }).catch(function () {
+    if (note) note.textContent = "Iklan lagi kosong / gagal dimuat. Coba lagi nanti.";
+    if (btn) { btn.disabled = false; btn.textContent = "📺 Tonton Iklan — Bonus +" + AD_REWARD + " 🪙"; }
+  }).finally(function () { adBusy = false; });
+}
+(function () {
+  const btn = document.getElementById("adRewardBtn");
+  if (btn) btn.addEventListener("click", watchRewardAd);
+})();
+
 /* ================= sound effects (Web Audio API, all synthesized) =================
    The AudioContext is created lazily inside sfx.unlock(), which is only
    called from a user gesture (the Start / Play Again tap) — no sound is
@@ -569,6 +683,7 @@ function endGame() {
   overBalEl.textContent = gpxlBalance;
   newRecordEl.style.display = isNewHigh ? "" : "none";
   autoSubmitScore();
+  onGameOverAds();
   overScreen.classList.remove("hidden");
   refreshStartStats();
   sfx.play("gameover");
