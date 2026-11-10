@@ -112,6 +112,7 @@
   .counter .cap{display:block;margin-top:3px;font-size:11px;color:#6f6a55;}
 </style>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 <style>html,body{overscroll-behavior:none;}</style>
 </head>
 <body>
@@ -141,6 +142,11 @@
       <button class="btn" id="playBtn" type="button">PLAY</button>
       <div class="stat-line" id="startHigh" style="display:none;">High Score: 0</div>
       <div class="bal-line">$GPXL Balance: <span id="startBal">0</span></div>
+      <div id="regBox" style="display:none;margin-top:10px;">
+        <button class="btn" id="regBtn" type="button">⭐ DAFTAR RESMI — 0,1 GRAM</button>
+        <div class="stat-line" id="regNote">Satu kali bayar (±Rp2.000) pakai GRAM dari wallet Telegram kamu: skor tercatat resmi di leaderboard + terdaftar untuk airdrop $GPXL.</div>
+      </div>
+      <div id="regDone" class="bal-line" style="display:none;">✓ Kamu sudah terdaftar resmi — skor kamu tercatat untuk airdrop $GPXL.</div>
       <div class="honest">Honest note: these are $GPXL <b>game points</b> — they can be claimed after the
         $GPXL token is LIVE on Solana. Official CA: DTTsj6jUBCcwCFAZqFwrL9e192WYjgbJyRQ3ynq5pump — the claim process will be announced on our official channels.</div>
 
@@ -245,6 +251,55 @@
       var nm = ((u.first_name||'') + ' ' + (u.last_name||'')).trim() || u.username || '';
       if(nm) localStorage.setItem('tg_name', nm.slice(0,20));
     }
+    // ---- GRAM registration flow (TON Connect + on-chain verification) ----
+    var TG_PAY_URL = 'https://kmkabjvhqtsaskhekecs.supabase.co/functions/v1/tg-pay';
+    var regBox = document.getElementById('regBox');
+    var regDone = document.getElementById('regDone');
+    var regBtn = document.getElementById('regBtn');
+    var regNote = document.getElementById('regNote');
+    var tcUI = null;
+    try { tcUI = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: 'https://goldenpixels.github.io/tonconnect-manifest.json' }); } catch(e) {}
+    function payApi(action, extra){
+      var body = { action: action, initData: tg.initData };
+      if (extra) for (var k in extra) body[k] = extra[k];
+      return fetch(TG_PAY_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })
+        .then(function(r){ return r.json(); });
+    }
+    function walletAddr(){
+      var w = tcUI && tcUI.wallet;
+      return (w && w.account && w.account.address) ? w.account.address : null;
+    }
+    function refreshReg(){
+      if(!tg.initData) return;
+      payApi('status').then(function(d){
+        if(d && d.registered){ regBox.style.display='none'; regDone.style.display='block'; }
+        else if(regBox){ regBox.style.display='block'; }
+      }).catch(function(){ if(regBox) regBox.style.display='block'; });
+    }
+    function pollReg(n){
+      if(n <= 0){ regNote.textContent = 'Pembayaran belum terlihat di jaringan. Kalau sudah bayar, tap tombol ini lagi untuk memeriksa.'; regBtn.disabled = false; return; }
+      payApi('status').then(function(d){
+        if(d && d.registered){ regBox.style.display='none'; regDone.style.display='block'; }
+        else setTimeout(function(){ pollReg(n-1); }, 4000);
+      }).catch(function(){ setTimeout(function(){ pollReg(n-1); }, 4000); });
+    }
+    if(tcUI) tcUI.onStatusChange(function(w){ if(w) refreshReg(); });
+    if(regBtn) regBtn.addEventListener('click', function(){
+      if(!tcUI){ regNote.textContent = 'Buka game ini dari dalam Telegram untuk membayar pakai GRAM.'; return; }
+      var addr = walletAddr();
+      if(!addr){ regNote.textContent = 'Hubungkan wallet Telegram kamu dulu, lalu tap tombol ini lagi.'; tcUI.openModal(); return; }
+      regBtn.disabled = true; regNote.textContent = 'Menyiapkan pembayaran GRAM…';
+      payApi('intent', { wallet: addr }).then(function(d){
+        if(d && d.registered){ refreshReg(); return; }
+        if(!d || !d.to){ regNote.textContent = 'Server pendaftaran belum aktif. Coba lagi nanti.'; regBtn.disabled = false; return; }
+        regNote.textContent = 'Konfirmasi pembayaran 0,1 GRAM di wallet kamu…';
+        tcUI.sendTransaction({ validUntil: Math.floor(Date.now()/1000) + 300,
+          messages: [{ address: d.to, amount: String(d.amount_nano) }] })
+        .then(function(){ regNote.textContent = 'Pembayaran terkirim — menunggu terlihat di jaringan…'; pollReg(8); })
+        .catch(function(){ regNote.textContent = 'Pembayaran dibatalkan. Tap tombol untuk mencoba lagi.'; regBtn.disabled = false; });
+      }).catch(function(){ regNote.textContent = 'Gagal menghubungi server. Coba lagi.'; regBtn.disabled = false; });
+    });
+    refreshReg();
   }catch(e){}
 })();
 </script>
